@@ -31,7 +31,7 @@ for metric in cta_admin_output_json:
         available_space_on_tape = capacity - occupancy
 
     # counting the number of partially filled tapes per library depending on specific individual tape capacity
-    if 0 < occupancy < capacity:
+    if 0 < occupancy < (0.95*capacity):
         if logicalLibrary not in partial_tapes_per_library_count:
             # initializes a value for the library if the library does not yet exist in the partial tapes dictionary
             partial_tapes_per_library_count[logicalLibrary] = 0
@@ -51,7 +51,7 @@ for metric in cta_admin_output_json:
     #produce_prom_metric('tape_occupancy', occupancy, labels_dict, labels=extract_labels)
     #produce_prom_metric('tape_available_space', available_space_on_tape, labels_dict, labels=extract_labels)
 
-# formatting for prometheus, returning total available space per logical library
+# formatting for prometheus, returning total available space per logical library in bytes
 for logicalLibrary, total_available_space in available_space_per_library.items():
     produce_prom_metric('tape_total_available_space', total_available_space, {"logicalLibrary": logicalLibrary}, labels=["logicalLibrary"])
 
