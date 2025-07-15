@@ -6,7 +6,8 @@ from common import produce_prom_metric
 
 extract_labels = ['vo', 'tapepool', 'vid', 'logicalLibrary']
 
-cta_admin_output = subprocess.check_output(["cta-admin", "--json", "tape", "ls", "--all"])
+#cta_admin_output = subprocess.check_output(["cta-admin", "--json", "tape", "ls", "--all"])
+cta_admin_output = subprocess.check_output(["XrdSecPROTOCOL=sss XrdSecSSSKT=/etc/cta/checkmk_sss.keytab cta-admin --json tape ls --all"], shell=True) 
 
 cta_admin_output_json = json.loads(cta_admin_output)
 
@@ -32,14 +33,14 @@ for metric in cta_admin_output_json:
     # counting the number of partially filled tapes per library depending on specific individual tape capacity
     if 0 < occupancy < capacity:
         if logicalLibrary not in partial_tapes_per_library_count:
+            # initializes a value for the library if the library does not yet exist in the partial tapes dictionary
             partial_tapes_per_library_count[logicalLibrary] = 0
-
         partial_tapes_per_library_count[logicalLibrary] += 1
-
-    # adding up the number of bytes per logical library to calculate total amount of available space per library 
+    
+    # adding up the number of bytes per logical library to calculate total amount of available space per library
     if logicalLibrary not in available_space_per_library:
+        # initializes a value for the library if it does not yet exist in available space dictionary
         available_space_per_library[logicalLibrary] = 0
-
     available_space_per_library[logicalLibrary] += available_space_on_tape
 
     labels_dict = {"vo": vo, "tapepool": tapepool, "vid": vid, "logicalLibrary": logicalLibrary}
@@ -52,8 +53,8 @@ for metric in cta_admin_output_json:
 
 # formatting for prometheus, returning total available space per logical library
 for logicalLibrary, total_available_space in available_space_per_library.items():
-    produce_prom_metric('tape_total_available_space', total_available_space, {"logicalLibrary": logicalLibrary}, labels=extract_labels)
+    produce_prom_metric('tape_total_available_space', total_available_space, {"logicalLibrary": logicalLibrary}, labels=["logicalLibrary"])
 
 # formatting for prometheus, returning number of partially filled tapes per logical library
 for logicalLibrary, partially_filled_tapes in partial_tapes_per_library_count.items():
-    produce_prom_metric('tape_partially_filled', partially_filled_tapes, {"logicalLibrary": logicalLibrary}, labels=extract_labels)
+    produce_prom_metric('tape_partially_filled', partially_filled_tapes, {"logicalLibrary": logicalLibrary}, labels=["logicalLibrary"])
