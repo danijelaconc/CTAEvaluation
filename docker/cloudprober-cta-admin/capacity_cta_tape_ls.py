@@ -15,6 +15,7 @@ available_space_on_tape = 0
 partial_tapes_per_library_count = {}
 enstore_partial_tapes_per_library_count = {}
 available_space_per_library = {}
+occupied_space_per_library = {}
 
 for metric in cta_admin_output_json:
     # extracting the value of the information from the tape ls cta-admin command
@@ -52,6 +53,11 @@ for metric in cta_admin_output_json:
             available_space_per_library[logicalLibrary] = 0
         available_space_per_library[logicalLibrary] += available_space_on_tape
 
+    # adding the number of occupied bytes per library
+    if logicalLibrary not in occupied_space_per_library:
+        occupied_space_per_library[logicalLibrary] = 0
+    occupied_space_per_library[logicalLibrary] += occupancy
+
     labels_dict = {"vo": vo, "tapepool": tapepool, "vid": vid, "logicalLibrary": logicalLibrary, "full": full}
 
     # formatting to look like what prometheus wants
@@ -71,3 +77,7 @@ for logicalLibrary, partially_filled_tapes in partial_tapes_per_library_count.it
 # formatting for prometheus, returning number of enstore partially filled tapes per library
 for logicalLibrary, enstore_partially_filled_tapes in enstore_partial_tapes_per_library_count.items():
     produce_prom_metric('enstore_total_tapes_partially_filled', enstore_partially_filled_tapes, {"logicalLibrary": logicalLibrary}, labels=["logicalLibrary"])
+
+# formatting for prometheus, returning occupied space per library in bytes
+for logicalLibrary, occupied_space in occupied_space_per_library.items():
+    produce_prom_metric('total_occupied_space_per_library', occupied_space, {"logicalLibrary": logicalLibrary}, labels=["logicalLibrary"])
