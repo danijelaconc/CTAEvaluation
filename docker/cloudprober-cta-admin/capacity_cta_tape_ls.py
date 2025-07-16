@@ -40,13 +40,13 @@ for metric in cta_admin_output_json:
             partial_tapes_per_library_count[logicalLibrary] = 0
         partial_tapes_per_library_count[logicalLibrary] += 1
     
-    # counting the number of partially filled tapes for just Enstore
-    if 0 < occupancy < (0.95*capacity) and full == 'True':
-        if logicalLibrary not in enstore_partial_tapes_per_library_count:
-            enstore_partial_tapes_per_library_count[logicalLibrary] = 0
-        enstore_partial_tapes_per_library_count[logicalLibrary] += 1
+        # counting the number of partially filled tapes for just Enstore
+        if full == 'True':
+            if logicalLibrary not in enstore_partial_tapes_per_library_count:
+                enstore_partial_tapes_per_library_count[logicalLibrary] = 0
+            enstore_partial_tapes_per_library_count[logicalLibrary] += 1
 
-    # adding up the number of bytes per logical library to calculate total amount of available space per library (with tapes that are not from Enstore)
+    # adding up the number of bytes per library for total available space per library (tapes not from Enstore)
     if full == 'False':
         if logicalLibrary not in available_space_per_library:
             # initializes a value for the library if it does not yet exist in available space dictionary
