@@ -6,8 +6,8 @@ from common import produce_prom_metric
 
 extract_labels = ['vo', 'tapepool', 'vid', 'logicalLibrary', 'full']
 
-#cta_admin_output = subprocess.check_output(["cta-admin", "--json", "tape", "ls", "--all"])
-cta_admin_output = subprocess.check_output(["XrdSecPROTOCOL=sss XrdSecSSSKT=/etc/cta/checkmk_sss.keytab cta-admin --json tape ls --all"], shell=True) 
+cta_admin_output = subprocess.check_output(["cta-admin", "--json", "tape", "ls", "--all"])
+#cta_admin_output = subprocess.check_output(["XrdSecPROTOCOL=sss XrdSecSSSKT=/etc/cta/checkmk_sss.keytab cta-admin --json tape ls --all"], shell=True) 
 
 cta_admin_output_json = json.loads(cta_admin_output)
 
